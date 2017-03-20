@@ -9,10 +9,10 @@ import (
 
 // GenerateHumanID will create a human id.
 // It returns the human id string and the associated integer.
-func GenerateHumanID(prefix string) (string, int64) {
+func GenerateHumanID(prefix string) string {
 	rand.Seed(time.Now().Unix())
-	i := rand.Intn(99999999)
+	i := rand.Intn(9999999999)
 	s := prefix + "-" + strconv.Itoa(i)
 
-	return strings.ToUpper(s), int64(i)
+	return strings.ToUpper(s)
 }
