@@ -4,15 +4,13 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // GenerateHumanID will create a human id.
 // It returns the human id string.
 func GenerateHumanID(prefix string) string {
-	rand.Seed(time.Now().Unix())
-	i := rand.Intn(9999999999)
-	s := prefix + "-" + strconv.Itoa(i)
+	i := rand.Int63()
+	s := prefix + "-" + strconv.FormatInt(i, 10)[:10]
 
 	return strings.ToUpper(s)
 }
