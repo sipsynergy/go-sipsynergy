@@ -8,7 +8,7 @@ import (
 )
 
 // GenerateHumanID will create a human id.
-// It returns the human id string and the associated integer.
+// It returns the human id string.
 func GenerateHumanID(prefix string) string {
 	rand.Seed(time.Now().Unix())
 	i := rand.Intn(9999999999)
