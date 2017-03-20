@@ -2,6 +2,7 @@ package utils
 
 import (
 	"math/rand"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -13,4 +14,12 @@ func GenerateHumanID(prefix string) string {
 	s := prefix + "-" + strconv.FormatInt(i, 10)[:10]
 
 	return strings.ToUpper(s)
+}
+
+// ValidateHumanID validates the given string.
+// returns true or false.
+func ValidateHumanID(humanID string) bool {
+	re := regexp.MustCompile(`^[A-Z]+-\d+`)
+
+	return re.MatchString(humanID)
 }
