@@ -14,6 +14,7 @@ func AuthRequired(apiKey string) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"message": "Not Authorized",
 			})
+			c.Abort()
 			return
 		}
 
