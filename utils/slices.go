@@ -1,7 +1,7 @@
 package utils
 
 // Supply a string and []string list and it will return a bool if found.
-func FindStringInSlice(str string, list []string) bool {
+func IsStringInSlice(str string, list []string) bool {
 	for _, v := range list {
 		if v == str {
 			return true
