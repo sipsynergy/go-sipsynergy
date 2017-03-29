@@ -7,13 +7,12 @@ func ConvertUintToString(value uint) string {
 }
 
 func ConvertStringToUint(value string) (uint, error) {
-    uint64value, err := strconv.ParseUint(value, 10, 64)
-    return uint(uint64value), err
+    valueInt, err := strconv.ParseUint(value, 10, 64)
+    return uint(valueInt), err
 }
 
-func ConvertStringToInt(value string) int {
-    i, _ := strconv.Atoi(value)
-    return i
+func ConvertStringToInt(value string) (int, error) {
+    return strconv.Atoi(value)
 }
 
 func ConvertIntToString(value int) string {
@@ -24,7 +23,6 @@ func ConvertFloatToString(value float64) string {
     return strconv.FormatFloat(value, 'g', 1, 64)
 }
 
-func ConvertStringToFloat(value string, precision int) float64 {
-    f, _ := strconv.ParseFloat(value, precision)
-    return f
+func ConvertStringToFloat(value string, precision int) (float64, error) {
+    return strconv.ParseFloat(value, precision)
 }
