@@ -4,7 +4,7 @@ import "os"
 
 // GetEnv will get the environment value from OS, if empty will use the fallback given.
 // returns interface.
-func GetEnv(key string, fallback interface{}) interface{} {
+func GetEnv(key string, fallback string) string {
 	value := os.Getenv(key)
 	if len(value) == 0 {
 		return fallback
