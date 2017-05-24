@@ -3,6 +3,8 @@ package config
 import (
 	"bytes"
 
+	"github.com/sipsynergy/go-sipsynergy/utils"
+
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 )
@@ -37,6 +39,7 @@ func LoadConfiguration() *viper.Viper {
 // PanicOnError logs error message and terminates the main process.
 func PanicOnError(err error, message string) {
 	if err != nil {
-		HandleError(err, message)
+		utils.HandleError(err, message)
 	}
 }
+
