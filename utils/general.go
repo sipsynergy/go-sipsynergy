@@ -10,22 +10,22 @@ import (
 // LoadConfiguration determines the app config store (consul) from the environment and loads full configuration.
 //
 // Example env:
-//   APP_CONFIG_TOKEN = 0a47d149-a608-7b83-29c3-5b1f4d89e986
-//   APP_CONFIG_HOST = localhost:8500
-//   APP_CONFIG_PATH = /services/feedback
+//   CONSUL_TOKEN = 0a47d149-a608-7b83-29c3-5b1f4d89e986
+//   CONSUL_HOST = localhost:8500
+//   CONSUL_PATH = /services/feedback
 //
 func LoadConfiguration() *viper.Viper {
 	v := viper.New()
 
 	v.AutomaticEnv()
 	config := api.DefaultConfig()
-	config.Address = v.GetString("APP_CONFIG_HOST")
-	config.Token = v.GetString("APP_CONFIG_TOKEN")
+	config.Address = v.GetString("CONSUL_HOST")
+	config.Token = v.GetString("CONSUL_TOKEN")
 
 	c, err := api.NewClient(config)
 	PanicOnError(err, "")
 
-	pair, _, err := c.KV().Get(v.GetString("APP_CONFIG_PATH"), nil)
+	pair, _, err := c.KV().Get(v.GetString("CONSUL_PATH"), nil)
 	PanicOnError(err, "Invalid consul config.")
 
 	v.SetConfigType("JSON")
