@@ -1,29 +1,37 @@
 package utils
 
 import (
+	"bytes"
+
+	"github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
-	_ "github.com/spf13/viper/remote"
 )
 
-// LoadConfiguration determines the app config store (consul or etcd) from the environment and loads full configuration.
+// LoadConfiguration determines the app config store (consul) from the environment and loads full configuration.
 //
 // Example env:
-//   APP_CONFIG_PROVIDER = consul
+//   APP_CONFIG_TOKEN = 0a47d149-a608-7b83-29c3-5b1f4d89e986
 //   APP_CONFIG_HOST = localhost:8500
-//   APP_CONFIG_PATH = ./my-application-config.json
+//   APP_CONFIG_PATH = /services/feedback
 //
-func LoadConfiguration() {
-	viper.AutomaticEnv()
+func LoadConfiguration() *viper.Viper {
+	v := viper.New()
 
-	viper.AddRemoteProvider(
-		viper.GetString("APP_CONFIG_PROVIDER"),
-		viper.GetString("APP_CONFIG_HOST"),
-		viper.GetString("APP_CONFIG_PATH"),
-	)
+	v.AutomaticEnv()
+	config := api.DefaultConfig()
+	config.Address = v.GetString("APP_CONFIG_HOST")
+	config.Token = v.GetString("APP_CONFIG_TOKEN")
 
-	viper.SetConfigType("json")
-	err := viper.ReadRemoteConfig()
-	PanicOnError(err, "Failed to read remote configuration.")
+	c, err := api.NewClient(config)
+	PanicOnError(err, "")
+
+	pair, _, err := c.KV().Get(v.GetString("APP_CONFIG_PATH"), nil)
+	PanicOnError(err, "Invalid consul config.")
+
+	v.SetConfigType("JSON")
+	v.ReadConfig(bytes.NewBuffer(pair.Value))
+
+	return v
 }
 
 // PanicOnError logs error message and terminates the main process.
