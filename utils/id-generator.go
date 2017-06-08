@@ -11,8 +11,8 @@ import (
 // GenerateHumanID will create a human id.
 // It returns the human id string.
 func GenerateHumanID(prefix string) string {
-    i := rand.Int63()
-    s := prefix + "-" + strconv.FormatInt(i, 10)[:10]
+    r := GenerateRandomNumericString(10)
+    s := prefix + "-" + r
 
     return strings.ToUpper(s)
 }
@@ -33,12 +33,13 @@ func GenerateRandomNumericString(length int) string {
     return strings.ToUpper(s)
 }
 
-func GenerateRandomStirng(length int) string {
+// Generate random string.
+func GenerateRandomString(length int) (string, error) {
     n := length
     b := make([]byte, n)
     if _, err := rand.Read(b); err != nil {
-        panic(err)
+        return nil, err
     }
     s := fmt.Sprintf("%X", b)
-    return s
+    return s, nil
 }
