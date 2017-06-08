@@ -38,7 +38,7 @@ func GenerateRandomString(length int) (string, error) {
     n := length
     b := make([]byte, n)
     if _, err := rand.Read(b); err != nil {
-        return nil, err
+        return "", err
     }
     s := fmt.Sprintf("%X", b)
     return s, nil
