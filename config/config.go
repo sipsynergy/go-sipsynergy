@@ -26,7 +26,7 @@ func LoadConfiguration() *viper.Viper {
 	utils.PanicOnError(err, "")
 
 	pair, _, err := c.KV().Get(v.GetString("CONSUL_PATH"), nil)
-	utils.PanicOnError(err, "Invalid consul config.")
+	utils.PanicOnError(err, "invalid consul config")
 
 	v.SetConfigType("JSON")
 	v.ReadConfig(bytes.NewBuffer(pair.Value))
