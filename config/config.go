@@ -2,10 +2,8 @@ package config
 
 import (
 	"bytes"
-
-	"github.com/sipsynergy/go-sipsynergy/utils"
-
 	"github.com/hashicorp/consul/api"
+	"github.com/sipsynergy/go-sipsynergy/utils"
 	"github.com/spf13/viper"
 )
 
@@ -25,21 +23,14 @@ func LoadConfiguration() *viper.Viper {
 	config.Token = v.GetString("CONSUL_TOKEN")
 
 	c, err := api.NewClient(config)
-	PanicOnError(err, "")
+	utils.PanicOnError(err, "")
 
 	pair, _, err := c.KV().Get(v.GetString("CONSUL_PATH"), nil)
-	PanicOnError(err, "Invalid consul config.")
+	utils.PanicOnError(err, "invalid consul config")
 
 	v.SetConfigType("JSON")
 	v.ReadConfig(bytes.NewBuffer(pair.Value))
 
 	return v
-}
-
-// PanicOnError logs error message and terminates the main process.
-func PanicOnError(err error, message string) {
-	if err != nil {
-		utils.HandleError(err, message)
-	}
 }
 
