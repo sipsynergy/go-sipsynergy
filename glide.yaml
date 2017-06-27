@@ -1,0 +1,11 @@
+package: github.com/sipsynergy/go-sipsynergy
+import:
+- package: github.com/hashicorp/consul
+  version: ^0.8.4
+  subpackages:
+  - api
+- package: github.com/micro/go-micro
+  version: ^0.1.1
+  subpackages:
+  - errors
+- package: github.com/spf13/viper
