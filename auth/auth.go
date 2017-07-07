@@ -76,11 +76,11 @@ func GetUserFromToken(
 	expires time.Time,
 	err error,
 ) {
-	user, expires, err = GetUserFromLegacyToken(token, legacyAPIRootURL); if err == nil {
+	user, expires, err = GetUserFromHydraToken(token, uc, db); if err == nil {
 		return
 	}
 
-	user, expires, err = GetUserFromHydraToken(token, uc, db); if err == nil {
+	user, expires, err = GetUserFromLegacyToken(token, legacyAPIRootURL); if err == nil {
 		return
 	}
 
