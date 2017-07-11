@@ -80,7 +80,7 @@ func GetUserFromToken(
 		return
 	}
 
-	user, expires, err = GetUserFromLegacyToken(token, legacyAPIRootURL); if err == nil {
+	user, expires, err = GetUserFromLegacyToken(token, legacyAPIRootURL, uc); if err == nil {
 		return
 	}
 
@@ -92,6 +92,7 @@ func GetUserFromToken(
 func GetUserFromLegacyToken(
 	token string,
 	legacyAPIRootURL string,
+	uc accounts_users.UsersClient,
 ) (
 	user *accounts_users.User,
 	expires time.Time,
@@ -118,15 +119,17 @@ func GetUserFromLegacyToken(
 		return nil, time.Time{}, errors.New("failed to parse v1 response json")
 	}
 
-	u := new(accounts_users.User)
-	u.ID = parsedJson.Path("user.userId").Data().(string)
-	u.DisplayName = parsedJson.Path("user.name").Data().(string)
-	u.Email = parsedJson.Path("user.email").Data().(string)
-	u.OrganisationID = parsedJson.Path("tenant.tenantId").Data().(string)
+	req := common.SimpleEntityRequest{
+		EntityID: parsedJson.Path("user.humanID").Data().(string),
+	}
+
+	rsp, err := uc.Get(context.Background(), &req); if err != nil {
+		return nil, time.Time{}, err
+	}
 
 	expiresOn := time.Now().Add(time.Duration(time.Hour))
 
-	return u, expiresOn, nil
+	return rsp.User, expiresOn, nil
 }
 
 // GetUserFromToken uses the current method (hydra and accounts service) to
