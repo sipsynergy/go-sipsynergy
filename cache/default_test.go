@@ -9,7 +9,8 @@ import (
 
 var _ = Describe("tests default cache", func() {
 
-	cache := NewDefaultCache()
+	var cache Cache
+	cache = NewDefaultCache()
 
 	It("should add a new item to the cache.", func() {
 		cache.Set("test-key", "test-value", time.Second*10)
