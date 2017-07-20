@@ -31,16 +31,16 @@ type DefaultCache struct {
 }
 
 // Get returns the item
-func (c *DefaultCache) Get(key string) (item *Item, err error) {
+func (c *DefaultCache) Get(key string) (i *Item, err error) {
 	c.m.RLock()
-	item, ok := c.items[key]
+	i, ok := c.items[key]
 	c.m.RUnlock()
 
 	if !ok {
 		err = fmt.Errorf("item not found for key '%s'", key)
 	}
 
-	if item.HasExpired() {
+	if c.hasExpired(i) {
 		c.Delete(key)
 
 		err = fmt.Errorf("item not found for key '%s'", key)
@@ -87,7 +87,7 @@ func (c *DefaultCache) Exists(key string) (bool, error) {
 		return false, nil
 	}
 
-	if i.HasExpired() {
+	if c.hasExpired(i) {
 		return false, nil
 	}
 
@@ -107,10 +107,15 @@ func (c *DefaultCache) FlushAll() (bool, error) {
 // If it has expired it will be removed from the cache.
 func (c *DefaultCache) ExpireKeys() {
 	for _, i := range c.items {
-		if i.HasExpired() {
+		if c.hasExpired(i) {
 			c.m.Lock()
 			c.Delete(i.Key)
 			c.m.Unlock()
 		}
 	}
+}
+
+// HasExpired returns true if the item has expired.
+func (c *DefaultCache) hasExpired(i *Item) bool {
+	return time.Now().After(i.Expiry)
 }

@@ -7,9 +7,9 @@ import "time"
 // difference is the expansion of words, example: del > delete.
 type Cache interface {
 	// Get returns the item
-	Get(key string) (item *Item, err error)
+	Get(key string) (*Item, error)
 	// Set saves the given value to the cache.
-	Set(key string, value interface{}, ttl time.Duration) (saved bool, err error)
+	Set(key string, value interface{}, ttl time.Duration) (bool, error)
 	// Delete deletes the given key
 	Delete(key string) (bool, error)
 	// Exists returns true or false depending on if it can find the key.
@@ -26,9 +26,4 @@ type Item struct {
 	Key    string
 	Value  interface{}
 	Expiry time.Time
-}
-
-// HasExpired returns true if the item has expired.
-func (i *Item) HasExpired() bool {
-	return time.Now().After(i.Expiry)
 }
