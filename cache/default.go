@@ -2,13 +2,17 @@ package cache
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 // NewDefaultCache returns an instance of the default cache.
 // Also creates a go routine to periodically check for expired keys.
 func NewDefaultCache() *DefaultCache {
-	c := &DefaultCache{items: make(map[string]*Item)}
+	c := &DefaultCache{
+		items: make(map[string]*Item),
+		m:     &sync.RWMutex{},
+	}
 
 	go func(c Cache) {
 		for {
@@ -23,11 +27,14 @@ func NewDefaultCache() *DefaultCache {
 // DefaultCache is the default implementation of the cache interface.
 type DefaultCache struct {
 	items map[string]*Item
+	m     *sync.RWMutex
 }
 
 // Get returns the item
 func (c *DefaultCache) Get(key string) (item *Item, err error) {
+	c.m.RLock()
 	item, ok := c.items[key]
+	c.m.RUnlock()
 
 	if !ok {
 		err = fmt.Errorf("item not found for key '%s'", key)
@@ -44,11 +51,13 @@ func (c *DefaultCache) Get(key string) (item *Item, err error) {
 
 // Set saves the given value to the cache.
 func (c *DefaultCache) Set(key string, value interface{}, ttl time.Duration) (saved bool, err error) {
+	c.m.Lock()
 	c.items[key] = &Item{
 		Key:    key,
 		Value:  value,
 		Expiry: time.Now().Add(ttl),
 	}
+	c.m.Unlock()
 
 	saved = true
 
@@ -61,14 +70,18 @@ func (c *DefaultCache) Delete(key string) (bool, error) {
 		return true, nil
 	}
 
+	c.m.Lock()
 	delete(c.items, key)
+	c.m.Unlock()
 
 	return true, nil
 }
 
 // Exists returns true or false depending on if it can find the key.
 func (c *DefaultCache) Exists(key string) (bool, error) {
+	c.m.RLock()
 	i, ok := c.items[key]
+	c.m.RUnlock()
 
 	if !ok {
 		return false, nil
@@ -83,7 +96,9 @@ func (c *DefaultCache) Exists(key string) (bool, error) {
 
 // FlushAll with delete all keys
 func (c *DefaultCache) FlushAll() (bool, error) {
+	c.m.Lock()
 	c.items = make(map[string]*Item)
+	c.m.Unlock()
 
 	return true, nil
 }
@@ -93,7 +108,9 @@ func (c *DefaultCache) FlushAll() (bool, error) {
 func (c *DefaultCache) ExpireKeys() {
 	for _, i := range c.items {
 		if i.HasExpired() {
+			c.m.Lock()
 			c.Delete(i.Key)
+			c.m.Unlock()
 		}
 	}
 }
