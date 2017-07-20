@@ -15,9 +15,10 @@ var _ = Describe("tests default cache", func() {
 	It("should add a new item to the cache.", func() {
 		cache.Set("test-key", "test-value", time.Second*10)
 
-		found, _ := cache.Exists("test-key")
+		found, err := cache.Exists("test-key")
 
 		Expect(found).To(Equal(true))
+		Expect(err).ToNot(HaveOccurred())
 	})
 
 	It("should get an item from the cache.", func() {
@@ -31,22 +32,26 @@ var _ = Describe("tests default cache", func() {
 	It("should remove an item from the cache.", func() {
 		key := "test-removal-key"
 		cache.Set(key, "data", time.Second*10)
-		found, _ := cache.Exists(key)
+		found, err := cache.Exists(key)
+		Expect(err).ToNot(HaveOccurred())
 		Expect(found).To(Equal(true))
 
 		cache.Delete(key)
-		found, _ = cache.Exists(key)
+		found, err = cache.Exists(key)
+		Expect(err).ToNot(HaveOccurred())
 		Expect(found).To(Equal(false))
 	})
 
 	It("should remove all keys", func() {
 		key := "test-removal-key"
 		cache.Set(key, "data", time.Second*10)
-		found, _ := cache.Exists(key)
+		found, err := cache.Exists(key)
+		Expect(err).ToNot(HaveOccurred())
 		Expect(found).To(Equal(true))
 
 		cache.FlushAll()
-		found, _ = cache.Exists(key)
+		found, err = cache.Exists(key)
+		Expect(err).ToNot(HaveOccurred())
 		Expect(found).To(Equal(false))
 	})
 })
