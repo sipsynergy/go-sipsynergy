@@ -6,8 +6,18 @@ import (
 )
 
 // NewDefaultCache returns an instance of the default cache.
+// Also creates a go routine to periodically check for expired keys.
 func NewDefaultCache() *DefaultCache {
-	return &DefaultCache{items: make(map[string]*Item)}
+	c := &DefaultCache{items: make(map[string]*Item)}
+
+	go func(c Cache) {
+		for {
+			time.Sleep(time.Minute)
+			c.ExpireKeys()
+		}
+	}(c)
+
+	return c
 }
 
 // DefaultCache is the default implementation of the cache interface.
@@ -23,12 +33,17 @@ func (c *DefaultCache) Get(key string) (item *Item, err error) {
 		err = fmt.Errorf("item not found for key '%s'", key)
 	}
 
+	if item.HasExpired() {
+		c.Delete(key)
+
+		err = fmt.Errorf("item not found for key '%s'", key)
+	}
+
 	return
 }
 
 // Set saves the given value to the cache.
 func (c *DefaultCache) Set(key string, value interface{}, ttl time.Duration) (saved bool, err error) {
-
 	c.items[key] = &Item{
 		Key:    key,
 		Value:  value,
@@ -53,9 +68,17 @@ func (c *DefaultCache) Delete(key string) (bool, error) {
 
 // Exists returns true or false depending on if it can find the key.
 func (c *DefaultCache) Exists(key string) (bool, error) {
-	_, ok := c.items[key]
+	i, ok := c.items[key]
 
-	return ok, nil
+	if !ok {
+		return false, nil
+	}
+
+	if i.HasExpired() {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 // FlushAll with delete all keys
@@ -69,7 +92,7 @@ func (c *DefaultCache) FlushAll() (bool, error) {
 // If it has expired it will be removed from the cache.
 func (c *DefaultCache) ExpireKeys() {
 	for _, i := range c.items {
-		if i.Expiry.After(time.Now()) {
+		if i.HasExpired() {
 			c.Delete(i.Key)
 		}
 	}

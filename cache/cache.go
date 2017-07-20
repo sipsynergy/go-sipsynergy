@@ -27,3 +27,8 @@ type Item struct {
 	Value  interface{}
 	Expiry time.Time
 }
+
+// HasExpired returns true if the item has expired.
+func (i *Item) HasExpired() bool {
+	return time.Now().After(i.Expiry)
+}
