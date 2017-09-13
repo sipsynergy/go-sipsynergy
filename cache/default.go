@@ -106,10 +106,12 @@ func (c *DefaultCache) FlushAll() (bool, error) {
 // ExpireKeys loops over each key indefinetly and checks to see if it has expired.
 // If it has expired it will be removed from the cache.
 func (c *DefaultCache) ExpireKeys() {
-	for _, i := range c.items {
-		if c.hasExpired(i) {
+	for i := range c.items {
+		item := c.items[i]
+
+		if c.hasExpired(item) {
 			c.m.Lock()
-			c.Delete(i.Key)
+			c.Delete(item.Key)
 			c.m.Unlock()
 		}
 	}
