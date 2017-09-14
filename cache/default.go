@@ -14,12 +14,16 @@ func NewDefaultCache() *DefaultCache {
 		m:     &sync.RWMutex{},
 	}
 
-	go func(c Cache) {
-		for {
-			time.Sleep(time.Minute)
+	var wg sync.WaitGroup
+	wg.Add(len(c.items))
+
+	for range c.items {
+		wg.Add(1)
+		go func(c Cache) {
+			defer wg.Done()
 			c.ExpireKeys()
-		}
-	}(c)
+		}(c)
+	}
 
 	return c
 }
