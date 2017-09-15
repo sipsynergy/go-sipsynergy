@@ -14,12 +14,16 @@ func NewDefaultCache() *DefaultCache {
 		m:     &sync.RWMutex{},
 	}
 
-	go func(c Cache) {
-		for {
-			time.Sleep(time.Minute)
+	var wg sync.WaitGroup
+	wg.Add(len(c.items))
+
+	for range c.items {
+		wg.Add(1)
+		go func(c Cache) {
+			defer wg.Done()
 			c.ExpireKeys()
-		}
-	}(c)
+		}(c)
+	}
 
 	return c
 }
@@ -106,10 +110,12 @@ func (c *DefaultCache) FlushAll() (bool, error) {
 // ExpireKeys loops over each key indefinetly and checks to see if it has expired.
 // If it has expired it will be removed from the cache.
 func (c *DefaultCache) ExpireKeys() {
-	for _, i := range c.items {
-		if c.hasExpired(i) {
+	for i := range c.items {
+		item := c.items[i]
+
+		if c.hasExpired(item) {
 			c.m.Lock()
-			c.Delete(i.Key)
+			c.Delete(item.Key)
 			c.m.Unlock()
 		}
 	}

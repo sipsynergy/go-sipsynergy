@@ -1,20 +1,21 @@
 package auth
 
 import (
-	"github.com/sipsynergy/proto-go/accounts_users"
-	"time"
-	"strings"
-	"github.com/buger/jsonparser"
+	"context"
 	"database/sql"
 	"errors"
-	"github.com/sipsynergy/proto-go/stypes/common"
-	"github.com/parnurzeal/gorequest"
-	"github.com/Jeffail/gabs"
-	"net/http"
 	"io/ioutil"
+	"net/http"
 	"strconv"
-	"context"
+	"strings"
+	"time"
+
+	"github.com/Jeffail/gabs"
+	"github.com/buger/jsonparser"
 	"github.com/micro/go-micro/metadata"
+	"github.com/parnurzeal/gorequest"
+	"github.com/sipsynergy/proto-go/accounts_users"
+	"github.com/sipsynergy/proto-go/stypes/common"
 )
 
 // IntrospectToken reads the 'subject' from the 'session_data' for this token
@@ -119,8 +120,13 @@ func GetUserFromLegacyToken(
 		return nil, time.Time{}, errors.New("failed to parse v1 response json")
 	}
 
+	humanIdData := parsedJson.Path("user.humanId").Data()
+	if humanIdData == nil {
+		return nil, time.Time{}, errors.New("failed to parse v1 response user.humanId field")
+	}
+
 	req := common.SimpleEntityRequest{
-		EntityID: parsedJson.Path("user.humanID").Data().(string),
+		EntityID: humanIdData.(string),
 	}
 
 	rsp, err := uc.Get(context.Background(), &req); if err != nil {
