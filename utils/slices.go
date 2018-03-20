@@ -9,3 +9,13 @@ func IsStringInSlice(str string, list []string) bool {
 	}
 	return false
 }
+
+// CheckAllStringsEmptyInSlice takes a []string and it will return true if all strings are empty.
+func CheckAllStringsEmptyInSlice(a []string) bool {
+    for i := 1; i < len(a); i++ {
+        if a[i] != "" {
+            return false
+        }
+    }
+    return true
+}
