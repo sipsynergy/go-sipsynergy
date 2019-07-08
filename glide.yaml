@@ -5,7 +5,9 @@ import:
   subpackages:
   - api
 - package: github.com/micro/go-micro
-  version: ^0.1.1
+  version: ^1.7.0
   subpackages:
   - errors
 - package: github.com/spf13/viper
+ignore:
+  - crypto/ed25519
