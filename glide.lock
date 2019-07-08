@@ -1,5 +1,5 @@
-hash: e4262fff9347fe914ff1ab6390dbcd5201269d61b0fdb6a36f03ec52046ca079
-updated: 2019-07-08T16:40:41.756696+01:00
+hash: 1fbf4d157c463c597424c91f1587419d3bf953b0d9f3baced2117f5386574a72
+updated: 2019-07-08T16:58:58.975412+01:00
 imports:
 - name: github.com/armon/go-metrics
   version: ec5e00d3c878b2a97bbe0884ef45ffd1b4f669f5
@@ -20,7 +20,7 @@ imports:
 - name: github.com/google/uuid
   version: c2e93f3ae59f2904160ceaab466009f965df46d6
 - name: github.com/hashicorp/consul
-  version: 40f243a5dab63b5265fe9014b8b3c4b7c3e7e053
+  version: a82e6a7fd33a0d05b9b871bcaf1d7595c9b8dedc
   subpackages:
   - api
 - name: github.com/hashicorp/go-cleanhttp
